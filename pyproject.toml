@@ -25,8 +25,7 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/itaprac/Inzynierski-projekt-zespolowy"
-"Bug Tracker" = "https://github.com/itaprac/Inzynierski-projekt-zespolowy/issues"
+"Homepage" = "https://github.com/MichalGudowicz29/pybelief"
 
 [tool.setuptools.packages.find]
 where = ["."]
