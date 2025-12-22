@@ -1,6 +1,5 @@
 import os
 import sys
-from importlib.metadata import PackageNotFoundError, version
 
 # Dodaj katalog główny projektu, aby importy pybelief działały przy budowie dokumentacji
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -12,11 +11,8 @@ if ROOT not in sys.path:
 
 project = "pybelief"
 author = "Grupa Dezert"
-
-try:
-	release = version("pybelief")
-except PackageNotFoundError:
-	release = "0.0.0"
+release = "0.1.0"
+version = "0.1"
 
 
 # -- Konfiguracja ogólna ----------------------------------------------------
@@ -42,4 +38,4 @@ autodoc_default_options = {
 # -- Wygląd HTML ------------------------------------------------------------
 
 html_theme = "furo"
-html_static_path = ["_static"]
+html_static_path = []
