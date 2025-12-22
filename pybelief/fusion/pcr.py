@@ -1,4 +1,5 @@
 from collections import defaultdict
+from typing import List
 from ..core.belief_mass import BeliefMass
 
 def combine(bma1: BeliefMass, bma2: BeliefMass) -> BeliefMass:
@@ -23,3 +24,24 @@ def combine(bma1: BeliefMass, bma2: BeliefMass) -> BeliefMass:
 
     # Wynik PCR5 normalizujemy dla pewności numerycznej
     return BeliefMass(result_map).normalize()
+
+def combine_multiple(sources: List[BeliefMass]) -> BeliefMass:
+    """Łączy wiele źródeł (BeliefMass) za pomocą reguły PCR5.
+    
+    Args:
+        sources: Lista źródeł BeliefMass do połączenia (minimum 2).
+        
+    Returns:
+        Połączony BeliefMass ze wszystkich źródeł.
+        
+    Raises:
+        ValueError: Jeśli podano mniej niż 2 źródła.
+    """
+    if len(sources) < 2:
+        raise ValueError("Wymagane są co najmniej 2 źródła do fuzji.")
+    
+    result = sources[0]
+    for source in sources[1:]:
+        result = combine(result, source)
+    
+    return result

@@ -1,6 +1,15 @@
+import os
+import sys
+
 import pytest
-from dst_dsmt.core.belief_mass import BeliefMass
-from dst_dsmt.fusion import dempster, pcr
+
+# Upewniamy się, że katalog projektu jest na sys.path przy uruchamianiu bez instalacji editable
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
+from pybelief.core.belief_mass import BeliefMass
+from pybelief.fusion import dempster, pcr
 
 # --- Testy Podstawowe (Core) ---
 
@@ -52,6 +61,19 @@ def test_dempster_paradox_behavior():
     # Konflikt (A vs B) zjada większość masy, zostaje tylko przecięcie C-C
     assert result.get_mass("C") > 0.99
 
+
+def test_dempster_combine_multiple_three_sources():
+    """Łączenie więcej niż dwóch źródeł przy użyciu combine_multiple."""
+    m1 = BeliefMass({frozenset("A"): 0.8, frozenset("B"): 0.2})
+    m2 = BeliefMass({frozenset("A"): 1.0})
+    m3 = BeliefMass({frozenset("A"): 1.0})
+
+    chained = dempster.combine_multiple([m1, m2, m3])
+
+    # Cała masa powinna skończyć na A po kolejnych normalizacjach
+    assert chained.get_mass("A") == pytest.approx(1.0)
+    assert chained.get_mass("B") == pytest.approx(0.0)
+
 # --- Testy Reguły PCR5 (DSmT) ---
 
 def test_pcr5_paradox_resolution():
@@ -70,3 +92,16 @@ def test_pcr5_paradox_resolution():
     # A i B powinny mieć wysokie poparcie (odzyskana masa z konfliktu)
     assert result.get_mass("A") > 0.4
     assert result.get_mass("B") > 0.4
+
+
+def test_pcr5_combine_multiple_three_sources():
+    """PCR5 również powinien poprawnie łączyć więcej niż dwa źródła."""
+    m1 = BeliefMass({frozenset("A"): 0.6, frozenset("B"): 0.4})
+    m2 = BeliefMass({frozenset("A"): 1.0})
+    m3 = BeliefMass({frozenset("A"): 1.0})
+
+    chained = pcr.combine_multiple([m1, m2, m3])
+
+    # Po redystrybucji konfliktu masa A powinna dominować, B minimalne
+    assert chained.get_mass("A") > 0.98
+    assert chained.get_mass("B") < 0.02
