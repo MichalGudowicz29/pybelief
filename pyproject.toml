@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pybelief"
+version = "0.1.0"
+description = "Lightweight, pure-Python library for Evidence Fusion (DST & DSmT/PCR5)"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT License"}
+authors = [
+    {name = "Grupa Dezert"}
+]
+# Brak zewnętrznych zależności = super lekka biblioteka
+dependencies = []
+
+keywords = ["dempster-shafer", "dsmt", "pcr5", "evidence-fusion", "belief-functions"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/itaprac/Inzynierski-projekt-zespolowy"
+"Bug Tracker" = "https://github.com/itaprac/Inzynierski-projekt-zespolowy/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pybelief*"]
