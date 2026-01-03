@@ -26,10 +26,11 @@ def run_zadeh_demo():
 
     # 1. Reguła Dempstera (DST)
     try:
-        dst_result = dempster.combine(m1, m2)
+        dst_result, conflict = dempster.combine(m1, m2)
         print("DST (Dempster):")
         for h, v in dst_result.items():
             print(f"  {set(h)}: {v:.5f}")
+        print(f"  Konflikt: {conflict:.5f}")
         print("-> WNIOSEK: Paradoks! 100% pewności, że to Guz (T), mimo że oboje w to wątpili.")
     except Exception as e:
         print(f"Błąd DST: {e}")
@@ -37,10 +38,11 @@ def run_zadeh_demo():
     print("-" * 30)
 
     # 2. Reguła PCR5 (DSmT)
-    pcr_result = pcr.combine(m1, m2)
+    pcr_result, pcr_conflict = pcr.combine(m1, m2)
     print("DSmT (PCR5):")
     for h, v in sorted(pcr_result.items(), key=lambda x: -x[1]):
         print(f"  {set(h)}: {v:.5f}")
+    print(f"  Konflikt: {pcr_conflict:.5f}")
     print("-> WNIOSEK: Konflikt rozdzielony. Nadal nie wiemy czy A czy B, ale T jest małe.")
 
 if __name__ == "__main__":

@@ -4,25 +4,25 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Status](https://img.shields.io/badge/status-beta-orange)]()
 
-Lekka biblioteka Pythona do fuzji danych (wnioskowania w warunkach niepewności). Implementuje klasyczną **Teorię Dempstera-Shafera (DST)** oraz nowoczesną **Teorię Dezerta-Smarandache'a (DSmT)** przy użyciu reguły PCR5.
+A lightweight Python library for data fusion (reasoning under uncertainty). Implements the classical **Dempster-Shafer Theory (DST)** and the modern **Dezert-Smarandache Theory (DSmT)** using the PCR5 rule.
 
-Zaprojektowana z myślą o skalowalności, czytelności i łatwej integracji.
-
----
-
-## Możliwości
-
-
-* **Architektura:** Oparta na `dataclasses` - łatwa w rozbudowie o nowe metadane bez psucia logiki fuzji.
-* **Zaimplementowane algorytmy:**
-    * **Reguła Dempstera:** Klasyczna fuzja z normalizacją konfliktu.
-    * **PCR5 (Proportional Conflict Redistribution):** Zaawansowana obsługa konfliktów (DSmT), rozwiązująca paradoksy klasycznej teorii.
+Designed with scalability, readability, and easy integration in mind.
 
 ---
 
-## Instalacja i Uruchomienie
+## Features
 
-### 1. Pobranie repozytorium
+
+* **Architecture:** Based on `dataclasses` - easy to extend with new metadata without breaking fusion logic.
+* **Implemented algorithms:**
+    * **Dempster's Rule:** Classical fusion with conflict normalization.
+    * **PCR5 (Proportional Conflict Redistribution):** Advanced conflict handling (DSmT), solving paradoxes of classical theory.
+
+---
+
+## Installation and Setup
+
+### 1. Clone the repository
 ```bash
 git clone https://github.com/itaprac/Inzynierski-projekt-zespolowy.git
 
@@ -30,25 +30,25 @@ cd Inzynierski-projekt-zespolowy/src/library
 
 ```
 
-### 2. Instalacja pakietu:
-Zalecamy instalację w trybie edytowalnym (`-e`), co pozwala na wprowadzanie zmian w kodzie bez konieczności reinstalacji.
+### 2. Install the package:
+We recommend installation in editable mode (`-e`), which allows making changes to the code without reinstallation.
 
 ```bash
-# Utworzenie wirtualnego środowiska (opcjonalnie, ale zalecane)
+# Create a virtual environment (optional, but recommended)
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
-# lub: .\venv\Scripts\activate  # Windows
+# or: .\venv\Scripts\activate  # Windows
 
-# Instalacja biblioteki
+# Install the library
 pip install -e .
 
-# Instalacja narzędzi deweloperskich (do testów)
-# (Brak zdefiniowanego extras "dev" w pyproject.toml. Zainstaluj narzędzia testowe ręcznie:)
+# Install development tools (for testing)
+# (No "dev" extras defined in pyproject.toml. Install testing tools manually:)
 pip install pytest
 
 ```
 
-### 3. Uruchomienie testów i przykładu 
+### 3. Run tests and examples
 
 ```bash 
 python example/zadeh_paradox.py
@@ -57,78 +57,78 @@ pytest -v
 ```
 ---
 
-## Jak używać (Szybki Start)
-Biblioteka udostępnia prosty interfejs oparty na klasie `BeliefMass` i funkcjach `combine`.
+## Quick Start
+The library provides a simple interface based on the `BeliefMass` class and `combine` functions.
 
 ```python
 from dst_dsmt import BeliefMass
 from dst_dsmt.fusion import dempster, pcr
 
-# 1. Zdefiniuj hipotezy (używając frozenset dla niemutowalności)
-# Sensor A twierdzi na 90%, że to Samolot (S)
+# 1. Define hypotheses (using frozenset for immutability)
+# Sensor A claims 90% it's an Aircraft (A)
 m1 = BeliefMass({
-    frozenset(['S']): 0.9,
-    frozenset(['R']): 0.1  # Rakieta
+    frozenset(['A']): 0.9,
+    frozenset(['R']): 0.1  # Rocket
 })
 
-# Sensor B twierdzi na 80%, że to Samolot (S)
+# Sensor B claims 80% it's an Aircraft (A)
 m2 = BeliefMass({
-    frozenset(['S']): 0.8,
+    frozenset(['A']): 0.8,
     frozenset(['R']): 0.2
 })
 
-# 2. Połącz wiedzę (Fuzja)
-wynik = pcr.combine(m1, m2)
+# 2. Combine knowledge (Fusion)
+result, conflict = pcr.combine(m1, m2)
 
-print(wynik.get_mass(['S'])) 
-# Wynik będzie bliski 0.98 (wzmocniona pewność)
+print(result.get_mass(['A'])) 
+# Result will be close to 0.98 (reinforced certainty)
 
 ```
 
 ---
 
-## Przykłady (Paradoks Zadeha)
-W folderze `examples/` znajduje się demonstracja **Paradoksu Zadeha**, który pokazuje, dlaczego klasyczna teoria Dempstera (DST) zawodzi przy wysokim konflikcie i dlaczego warto stosować PCR5 (DSmT).
+## Examples (Zadeh's Paradox)
+The `examples/` folder contains a demonstration of **Zadeh's Paradox**, which shows why classical Dempster-Shafer Theory (DST) fails under high conflict and why PCR5 (DSmT) should be used instead.
 
-Aby uruchomić przykład:
+To run the example:
 
 ```bash
 python examples/zadeh_paradox.py
 
 ```
 
-**Oczekiwany wynik:**
+**Expected output:**
 
-* **DST:** Pokaże mylący wynik (pewność co do mało prawdopodobnej hipotezy).
-* **PCR5:** Pokaże logiczny wynik (konflikt wraca do źródeł).
+* **DST:** Will show a misleading result (certainty about an unlikely hypothesis).
+* **PCR5:** Will show a logical result (conflict returns to sources).
 
 ---
 
-## Uruchamianie Testów
-Biblioteka posiada zestaw testów jednostkowych sprawdzających poprawność obliczeń matematycznych.
+## Running Tests
+The library includes a set of unit tests verifying mathematical correctness.
 
 ```bash
 
-# Uruchomienie z dokładnym opisem (verbose)
+# Run with verbose output
 pytest -v
 
 ```
 
 ---
 
-## Struktura Projektu
+## Project Structure
 
 ```text
 library/
 ├── pybelief/
-│   ├── core/           # Podstawowe struktury danych (BeliefMass)
-│   └── fusion/         # Algorytmy (Dempster, PCR5)
-├── examples/           # Skrypty demonstracyjne
-├── tests/              # Testy jednostkowe
-├── pyproject.toml      # Konfiguracja pakietu
-└── README.md           # Ten plik
+│   ├── core/           # Core data structures (BeliefMass)
+│   └── fusion/         # Algorithms (Dempster, PCR5)
+├── examples/           # Demo scripts
+├── tests/              # Unit tests
+├── pyproject.toml      # Package configuration
+└── README.md           # This file
 
 ```
 
-## Licencja
-Projekt jest objęty licencją MIT. Szczegóły w pliku `LICENSE`.
+## License
+This project is licensed under the MIT License. See the `LICENSE` file for details.

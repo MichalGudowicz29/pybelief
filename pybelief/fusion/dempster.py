@@ -2,8 +2,25 @@ from collections import defaultdict
 from typing import List
 from ..core.belief_mass import BeliefMass
 
-def combine(bma1: BeliefMass, bma2: BeliefMass) -> BeliefMass:
-    """Reguła Dempstera: przecięcia z normalizacją (1 / 1-K)."""
+def combine(bma1: BeliefMass, bma2: BeliefMass) -> tuple[BeliefMass, float]:
+    """Combine two belief mass functions using Dempster's rule of combination.
+
+    Computes the conjunctive combination of two belief mass assignments
+    with normalization factor (1 / 1-K), where K is the conflict mass.
+
+    Args:
+        bma1: First belief mass assignment to combine.
+        bma2: Second belief mass assignment to combine.
+
+    Returns:
+        A tuple containing:
+            - BeliefMass: The combined belief mass after normalization.
+            - float: The conflict mass (K) between the two sources.
+
+    Raises:
+        ValueError: If total conflict is 1.0 (complete contradiction),
+            making DST fusion impossible.
+    """
     result_map = defaultdict(float)
     conflict = 0.0
 
@@ -18,32 +35,38 @@ def combine(bma1: BeliefMass, bma2: BeliefMass) -> BeliefMass:
                 conflict += prod
 
     if conflict >= 1.0 - 1e-10:
-        raise ValueError("Całkowity konflikt - fuzja DST niemożliwa.")
+        raise ValueError("Total conflict - DST fusion impossible.")
 
-    # Normalizacja
+    # Normalization
     normalization_factor = 1.0 / (1.0 - conflict)
     normalized_map = {k: v * normalization_factor for k, v in result_map.items()}
     
-    return BeliefMass(normalized_map)
+    return BeliefMass(normalized_map), conflict
 
 
 def combine_multiple(sources: List[BeliefMass]) -> BeliefMass:
-    """Łączy wiele źródeł (BeliefMass) za pomocą reguły Dempstera.
-    
+    """Combine multiple belief mass functions using Dempster's rule.
+
+    Sequentially applies Dempster's combination rule to fuse multiple
+    belief mass assignments into a single combined result.
+
     Args:
-        sources: Lista źródeł BeliefMass do połączenia (minimum 2).
-        
+        sources: List of BeliefMass objects to combine. Must contain
+            at least 2 sources.
+
     Returns:
-        Połączony BeliefMass ze wszystkich źródeł.
-        
+        BeliefMass: The combined belief mass from all sources.
+
     Raises:
-        ValueError: Jeśli podano mniej niż 2 źródła.
+        ValueError: If fewer than 2 sources are provided.
+        ValueError: If total conflict reaches 1.0 during any
+            intermediate combination step.
     """
     if len(sources) < 2:
-        raise ValueError("Wymagane są co najmniej 2 źródła do fuzji.")
+        raise ValueError("At least 2 sources are required for fusion.")
     
     result = sources[0]
     for source in sources[1:]:
-        result = combine(result, source)
+        result, _ = combine(result, source)
     
     return result
