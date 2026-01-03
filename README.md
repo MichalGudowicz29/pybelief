@@ -4,6 +4,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Status](https://img.shields.io/badge/status-beta-orange)]()
 
+https://pybelief.readthedocs.io/en/latest/usage.html
+
 A lightweight Python library for data fusion (reasoning under uncertainty). Implements the classical **Dempster-Shafer Theory (DST)** and the modern **Dezert-Smarandache Theory (DSmT)** using the PCR5 rule.
 
 Designed with scalability, readability, and easy integration in mind.
