@@ -26,7 +26,7 @@ def combine(bma1: BeliefMass, bma2: BeliefMass) -> tuple[BeliefMass, float]:
         for h2, m2 in bma2.items():
             intersection = h1 & h2
             prod = m1 * m2
-            
+
             if intersection:
                 # 1. Classical intersection
                 result_map[intersection] += prod
@@ -41,7 +41,7 @@ def combine(bma1: BeliefMass, bma2: BeliefMass) -> tuple[BeliefMass, float]:
 
     return BeliefMass(result_map).normalize(), conflict
 
-def combine_multiple(sources: List[BeliefMass]) -> BeliefMass:
+def combine_multiple(sources: List[BeliefMass]) -> tuple[BeliefMass, float]:
     """Combine multiple belief mass functions using the PCR5 rule.
 
     Sequentially applies the PCR5 combination rule to fuse multiple
@@ -52,16 +52,24 @@ def combine_multiple(sources: List[BeliefMass]) -> BeliefMass:
             at least 2 sources.
 
     Returns:
-        BeliefMass: The combined belief mass from all sources.
+        A tuple containing:
+            BeliefMass: The combined belief mass from all sources.
+            float: The total conflict mass accumulated during combination.
 
     Raises:
         ValueError: If fewer than 2 sources are provided.
     """
     if len(sources) < 2:
         raise ValueError("At least 2 sources are required for fusion.")
-    
+
+    if len(sources) == 2:
+        result, conflict = combine(sources[0], sources[1])
+        return result, conflict
+
     result = sources[0]
+    total_conflict = 0.0
     for source in sources[1:]:
-        result, _ = combine(result, source)
-    
-    return result
+        result, conflict = combine(result, source)
+        total_conflict += conflict
+
+    return result, total_conflict
