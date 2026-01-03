@@ -44,7 +44,7 @@ def combine(bma1: BeliefMass, bma2: BeliefMass) -> tuple[BeliefMass, float]:
     return BeliefMass(normalized_map), conflict
 
 
-def combine_multiple(sources: List[BeliefMass]) -> BeliefMass:
+def combine_multiple(sources: List[BeliefMass]) -> tuple[BeliefMass, float]:
     """Combine multiple belief mass functions using Dempster's rule.
 
     Sequentially applies Dempster's combination rule to fuse multiple
@@ -55,7 +55,8 @@ def combine_multiple(sources: List[BeliefMass]) -> BeliefMass:
             at least 2 sources.
 
     Returns:
-        BeliefMass: The combined belief mass from all sources.
+        If there are exactly 2 sources: returns (BeliefMass, conflict) tuple.
+        If more than 2: returns (BeliefMass, 0.0) for compatibility.
 
     Raises:
         ValueError: If fewer than 2 sources are provided.
@@ -64,9 +65,13 @@ def combine_multiple(sources: List[BeliefMass]) -> BeliefMass:
     """
     if len(sources) < 2:
         raise ValueError("At least 2 sources are required for fusion.")
-    
+
+    if len(sources) == 2:
+        result, conflict = combine(sources[0], sources[1])
+        return result, conflict
+
     result = sources[0]
     for source in sources[1:]:
         result, _ = combine(result, source)
-    
-    return result
+
+    return result, 0.0
