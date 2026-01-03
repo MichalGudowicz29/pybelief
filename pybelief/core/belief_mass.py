@@ -1,21 +1,20 @@
 from dataclasses import dataclass, field
 from typing import Dict, FrozenSet, Union, List
 
-# Alias typu
+# Type alias
 Hypothesis = FrozenSet[str]
 
 @dataclass
 class BeliefMass:
-    """
-    Lekki kontener na masy przekonań.
-    
-    Przechowuje podstawowy przekonanie (basic belief assignment) w postaci
-    słownika: hipoteza -> masa. Automatycznie czyści bardzo małe wartości
-    (< 1e-10) z błędów numerycznych.
-    
+    """A lightweight container for belief masses.
+
+    Stores basic belief assignment (BBA) as a dictionary mapping
+    hypotheses to masses. Automatically cleans very small values
+    (< 1e-10) from numerical errors.
+
     Attributes:
-        masses: Słownik mapujący frozenset hipotez na masy [0, 1].
-    
+        masses: Dictionary mapping frozenset hypotheses to masses [0, 1].
+
     Examples:
         >>> m = BeliefMass({frozenset("A"): 0.6, frozenset("B"): 0.4})
         >>> m.get_mass("A")
@@ -25,19 +24,19 @@ class BeliefMass:
     masses: Dict[Hypothesis, float] = field(default_factory=dict)
     
     def __post_init__(self):
-        """Automatyczne czyszczenie zerowych mas przy tworzeniu."""
-        # Filtrujemy bardzo małe wartości (błędy numeryczne)
+        """Automatically clean zero masses on creation."""
+        # Filter out very small values (numerical errors)
         self.masses = {k: v for k, v in self.masses.items() if v > 1e-10}
 
     def normalize(self) -> 'BeliefMass':
-        """Zwraca nową, znormalizowaną instancję.
-        
-        Normalizuje masy tak, aby sumowały się do 1.0. Jeśli suma mas wynosi 0,
-        zwraca pustą instancję.
-        
+        """Return a new normalized instance.
+
+        Normalizes masses so they sum to 1.0. If the sum of masses is 0,
+        returns an empty instance.
+
         Returns:
-            Nowa instancja BeliefMass ze znormalizowanymi masami.
-        
+            BeliefMass: New instance with normalized masses.
+
         Examples:
             >>> m = BeliefMass({frozenset("A"): 0.4, frozenset("B"): 0.1})
             >>> normalized = m.normalize()
@@ -49,18 +48,20 @@ class BeliefMass:
         return BeliefMass({k: v / total for k, v in self.masses.items()})
 
     def get_mass(self, hypothesis: Union[Hypothesis, list, set, str]) -> float:
-        """Bezpieczny dostęp do masy dla hipotezy.
-        
-        Automatycznie konwertuje różne formaty hipotez (str, list, set, frozenset)
-        na frozenset i zwraca masę. Jeśli hipoteza nie istnieje, zwraca 0.0.
-        
+        """Safely access the mass for a hypothesis.
+
+        Automatically converts various hypothesis formats (str, list, set,
+        frozenset) to frozenset and returns the mass. Returns 0.0 if the
+        hypothesis does not exist.
+
         Args:
-            hypothesis: Hipoteza jako string ("A"), lista ["A", "B"], 
-                set, frozenset lub Hypothesis.
-        
+            hypothesis: Hypothesis as string ("A"), list ["A", "B"],
+                set, frozenset, or Hypothesis type.
+
         Returns:
-            Masa dla hipotezy w przedziale [0, 1]. 0.0 jeśli hipoteza nie istnieje.
-        
+            float: Mass for the hypothesis in range [0, 1]. 0.0 if
+                hypothesis does not exist.
+
         Examples:
             >>> m = BeliefMass({frozenset("A"): 0.8})
             >>> m.get_mass("A")
@@ -77,10 +78,10 @@ class BeliefMass:
         return self.masses.get(hypothesis, 0.0)
 
     def items(self):
-        """Zwraca widok par (hipoteza, masa) z wewnętrznego słownika.
-        
+        """Return a view of (hypothesis, mass) pairs from internal dictionary.
+
         Returns:
-            dict_items z mapą mas (Hypothesis -> float).
+            dict_items: Items view of masses mapping (Hypothesis -> float).
         """
         return self.masses.items()
 
