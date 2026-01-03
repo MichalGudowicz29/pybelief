@@ -43,7 +43,7 @@ def test_dempster_consensus():
     m1 = BeliefMass({frozenset("A"): 1.0})
     m2 = BeliefMass({frozenset("A"): 1.0})
     
-    result = dempster.combine(m1, m2)
+    result, conflict = dempster.combine(m1, m2)
     assert result.get_mass("A") == 1.0
 
 def test_dempster_paradox_behavior():
@@ -56,7 +56,7 @@ def test_dempster_paradox_behavior():
     m1 = BeliefMass({frozenset("A"): 0.99, frozenset("C"): 0.01})
     m2 = BeliefMass({frozenset("B"): 0.99, frozenset("C"): 0.01})
     
-    result = dempster.combine(m1, m2)
+    result, conflict = dempster.combine(m1, m2)
     
     # Konflikt (A vs B) zjada większość masy, zostaje tylko przecięcie C-C
     assert result.get_mass("C") > 0.99
@@ -84,7 +84,7 @@ def test_pcr5_paradox_resolution():
     m1 = BeliefMass({frozenset("A"): 0.99, frozenset("C"): 0.01})
     m2 = BeliefMass({frozenset("B"): 0.99, frozenset("C"): 0.01})
     
-    result = pcr.combine(m1, m2)
+    result, conflict = pcr.combine(m1, m2)
     
     # C powinno być bardzo małe (iloczyn 0.01 * 0.01 + drobna redystrybucja)
     assert result.get_mass("C") < 0.01
