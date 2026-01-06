@@ -17,7 +17,7 @@ def combine(bma1: BeliefMass, bma2: BeliefMass) -> tuple[BeliefMass, float]:
     Returns:
         A tuple containing:
             BeliefMass: The combined and normalized belief mass after proportional conflict redistribution.
-            float: The conflict mass between the two sources.
+            conflict: Always None 
     """
     result_map = defaultdict(float)
     conflict = 0.0
@@ -32,14 +32,14 @@ def combine(bma1: BeliefMass, bma2: BeliefMass) -> tuple[BeliefMass, float]:
                 result_map[intersection] += prod
             elif prod > 0:
                 # 2. Conflict - no common elements
-                conflict += prod
+                # conflict += prod
                 # PCR5 conflict redistribution
                 sum_m = m1 + m2
                 if sum_m > 0:
                     result_map[h1] += (m1 * prod) / sum_m
                     result_map[h2] += (m2 * prod) / sum_m
 
-    return BeliefMass(result_map).normalize(), conflict
+    return BeliefMass(result_map).normalize(), None
 
 def combine_multiple(sources: List[BeliefMass]) -> tuple[BeliefMass, float]:
     """Combine multiple belief mass functions using the PCR5 rule.
@@ -53,8 +53,8 @@ def combine_multiple(sources: List[BeliefMass]) -> tuple[BeliefMass, float]:
 
     Returns:
         A tuple containing:
-            BeliefMass: The combined belief mass from all sources.
-            float: The total conflict mass accumulated during combination.
+        -BeliefMass: The combined belief mass from all sources.
+        -float: The total conflict mass accumulated during combination.
 
     Raises:
         ValueError: If fewer than 2 sources are provided.
