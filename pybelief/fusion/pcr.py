@@ -17,7 +17,7 @@ def combine(bma1: BeliefMass, bma2: BeliefMass) -> tuple[BeliefMass, float]:
     Returns:
         A tuple containing:
             BeliefMass: The combined and normalized belief mass after proportional conflict redistribution.
-            float: The conflict mass between the two sources.
+            conflict: Always None 
     """
     result_map = defaultdict(float)
     conflict = 0.0
